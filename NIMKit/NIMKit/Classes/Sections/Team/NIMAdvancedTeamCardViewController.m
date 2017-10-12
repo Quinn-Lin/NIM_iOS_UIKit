@@ -61,7 +61,7 @@
         [_avatar addTarget:self action:@selector(onTouchAvatar:) forControlEvents:UIControlEventTouchUpInside];
         _titleLabel                      = [[UILabel alloc]initWithFrame:CGRectZero];
         _titleLabel.backgroundColor      = [UIColor clearColor];
-        _titleLabel.font                 = [UIFont systemFontOfSize:17.f];
+        _titleLabel.font                 = [UIFont systemFontOfSize:16.f];
         _titleLabel.textColor            = NIMKit_UIColorFromRGB(0x333333);
         _numberLabel                     = [[UILabel alloc]initWithFrame:CGRectZero];
         _numberLabel.backgroundColor     = [UIColor clearColor];
@@ -76,7 +76,8 @@
         [self addSubview:_numberLabel];
         [self addSubview:_createTimeLabel];
         
-        self.backgroundColor = NIMKit_UIColorFromRGB(0xecf1f5);
+//        self.backgroundColor = NIMKit_UIColorFromRGB(0xecf1f5);
+        self.backgroundColor = [UIColor clearColor];
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         
         [self refresh];
@@ -85,7 +86,7 @@
 }
 
 - (CGSize)sizeThatFits:(CGSize)size{
-    return CGSizeMake(size.width, CardHeaderHeight);
+    return CGSizeMake(size.width, CardHeaderHeight + 20);
 }
 
 - (void)refresh
@@ -115,15 +116,16 @@
 }
 
 #define AvatarLeft 20
-#define AvatarTop  25
+#define AvatarTop  18
 #define TitleAndAvatarSpacing 10
 #define NumberAndTimeSpacing  10
 #define MaxTitleLabelWidth 200
 - (void)layoutSubviews{
     [super layoutSubviews];
     _titleLabel.text  = self.team.teamName;
-    _numberLabel.text = self.team.teamId;
-    _createTimeLabel.text  = [self formartCreateTime];
+//    _numberLabel.text = self.team.teamId;
+    _numberLabel.text = @"英盛总经理商学院";
+//    _createTimeLabel.text  = [self formartCreateTime];
     [_titleLabel sizeToFit];
     [_createTimeLabel sizeToFit];
     [_numberLabel sizeToFit];
@@ -132,9 +134,9 @@
     self.avatar.nim_left = AvatarLeft;
     self.avatar.nim_top  = AvatarTop;
     self.titleLabel.nim_left = self.avatar.nim_right + TitleAndAvatarSpacing;
-    self.titleLabel.nim_top  = self.avatar.nim_top;
+    self.titleLabel.nim_bottom  = self.avatar.nim_centerY;
     self.numberLabel.nim_left   = self.titleLabel.nim_left;
-    self.numberLabel.nim_bottom = self.avatar.nim_bottom;
+    self.numberLabel.nim_top = self.avatar.nim_centerY;
     self.createTimeLabel.nim_left   = self.numberLabel.nim_right + NumberAndTimeSpacing;
     self.createTimeLabel.nim_bottom = self.numberLabel.nim_bottom;
 }
@@ -198,6 +200,11 @@
 
     headerView.delegate = self;
     headerView.nim_size = [headerView sizeThatFits:self.view.nim_size];
+    
+    UIView *backgroudView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, headerView.nim_width, CardHeaderHeight)];
+    backgroudView.backgroundColor = [UIColor whiteColor];
+    [headerView insertSubview:backgroudView atIndex:0];
+    
     self.navigationItem.title = self.team.teamName;
     self.tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
     self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -266,9 +273,16 @@
     BOOL isOwner    = self.myTeamInfo.type == NIMTeamMemberTypeOwner;
     BOOL isManager  = self.myTeamInfo.type == NIMTeamMemberTypeManager;
     
+    NIMTeamCardRowItem *teamMemberTitle = [[NIMTeamCardRowItem alloc] init];
+    teamMemberTitle.title = @"群成员";
+    teamMemberTitle.subTitle = [NSString stringWithFormat:@"共%d人", (int)self.memberData.count];
+    teamMemberTitle.rowHeight = 50.f;
+    teamMemberTitle.action = @selector(enterMemberCard);
+    teamMemberTitle.type = TeamCardRowItemTypeCommon;
+    
     NIMTeamCardRowItem *teamMember = [[NIMTeamCardRowItem alloc] init];
-    teamMember.title  = @"群成员";
-    teamMember.rowHeight = 111.f;
+//    teamMember.title  = @"群成员";
+    teamMember.rowHeight = 90.f;
     teamMember.action = @selector(enterMemberCard);
     teamMember.type   = TeamCardRowItemTypeTeamMember;
     
@@ -305,8 +319,8 @@
     
     
     NIMTeamCardRowItem *teamNotify = [[NIMTeamCardRowItem alloc] init];
-    teamNotify.title  = @"消息提醒";
-    teamNotify.switchOn = [self.team notifyForNewMsg];
+    teamNotify.title  = @"消息免打扰";
+    teamNotify.switchOn = ![self.team notifyForNewMsg];
     teamNotify.rowHeight = 50.f;
     teamNotify.type   = TeamCardRowItemTypeSwitch;
 
@@ -359,25 +373,28 @@
     
     if (isOwner) {
         self.bodyData = @[
-                  @[teamMember],
-                  @[teamName,teamNick,teamIntro,teamAnnouncement,teamNotify],
-                  @[itemAuth],
-                  @[itemInvite,itemUpdateInfo,itemBeInvite],
-                  @[itemDismiss],
+                  @[teamMemberTitle, teamMember],
+                  @[teamNotify]
+//                  @[teamName,teamNick,teamIntro,teamAnnouncement,teamNotify],
+//                  @[itemAuth],
+//                  @[itemInvite,itemUpdateInfo,itemBeInvite],
+//                  @[itemDismiss],
                  ];
     }else if(isManager){
         self.bodyData = @[
-                 @[teamMember],
-                 @[teamName,teamNick,teamIntro,teamAnnouncement,teamNotify],
-                 @[itemAuth],
-                 @[itemInvite,itemUpdateInfo,itemBeInvite],
-                 @[itemQuit],
+                 @[teamMemberTitle, teamMember],
+                 @[teamNotify]
+//                 @[teamName,teamNick,teamIntro,teamAnnouncement,teamNotify],
+//                 @[itemAuth],
+//                 @[itemInvite,itemUpdateInfo,itemBeInvite],
+//                 @[itemQuit],
                  ];
     }else{
         self.bodyData = @[
-                          @[teamMember],
-                          @[teamName,teamNick,teamIntro,teamAnnouncement,teamNotify],
-                          @[itemQuit],
+                          @[teamMemberTitle, teamMember],
+                          @[teamNotify]
+//                          @[teamName,teamNick,teamIntro,teamAnnouncement,teamNotify],
+//                          @[itemQuit],
                           ];
     }
 }
@@ -523,11 +540,11 @@
     [cell rereshWithTeam:self.team members:self.memberData width:self.tableView.nim_width];
     cell.textLabel.text = bodyData.title;
     cell.detailTextLabel.text = bodyData.subTitle;
-    if ([bodyData respondsToSelector:@selector(actionDisabled)] && bodyData.actionDisabled) {
+//    if ([bodyData respondsToSelector:@selector(actionDisabled)] && bodyData.actionDisabled) {
         cell.accessoryType = UITableViewCellAccessoryNone;
-    }else{
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    }
+//    }else{
+//        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+//    }
     return cell;
 }
 
@@ -671,7 +688,7 @@
 - (void)onStateChanged:(BOOL)on
 {
     __weak typeof(self) weakSelf = self;
-    [[[NIMSDK sharedSDK] teamManager] updateNotifyState:on
+    [[[NIMSDK sharedSDK] teamManager] updateNotifyState:!on
                                                  inTeam:[self.team teamId]
                                              completion:^(NSError *error) {
                                                  if (error) {

@@ -21,7 +21,7 @@
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier{
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        _avatarImageView = [[NIMAvatarImageView alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
+        _avatarImageView = [[NIMAvatarImageView alloc] initWithFrame:CGRectMake(0, 0, 35, 35)];
         [_avatarImageView addTarget:self action:@selector(onPressAvatar:) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:_avatarImageView];
         _accessoryBtn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -96,6 +96,7 @@
     self.avatarImageView.nim_left = self.accessoryBtn.hidden ? NIMContactAvatarLeft : NIMContactAvatarAndAccessorySpacing + self.accessoryBtn.nim_right;
     self.avatarImageView.nim_centerY = self.nim_height * .5f;
     self.textLabel.nim_left = self.avatarImageView.nim_right + NIMContactAvatarAndTitleSpacing;
+    self.detailTextLabel.nim_left = self.textLabel.nim_left;
 }
 
 @end

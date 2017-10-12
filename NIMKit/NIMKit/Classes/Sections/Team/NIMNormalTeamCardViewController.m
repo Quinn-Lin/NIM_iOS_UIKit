@@ -139,8 +139,8 @@
     itemName.type             = TeamCardRowItemTypeCommon;
     
     NIMTeamCardRowItem *teamNotify = [[NIMTeamCardRowItem alloc] init];
-    teamNotify.title            = @"消息提醒";
-    teamNotify.switchOn         = [self.team notifyForNewMsg];
+    teamNotify.title            = @"消息免打扰";
+    teamNotify.switchOn         = ![self.team notifyForNewMsg];
     teamNotify.rowHeight        = 50.f;
     teamNotify.type             = TeamCardRowItemTypeSwitch;
 
@@ -150,7 +150,7 @@
     itemQuit.rowHeight        = 60.f;
     itemQuit.type             = TeamCardRowItemTypeRedButton;
     
-    return @[@[itemName,teamNotify,],@[itemQuit]];
+    return @[@[itemName,], @[teamNotify,], @[itemQuit]];
 }
 
 
@@ -217,7 +217,7 @@
 - (void)onStateChanged:(BOOL)on
 {
     __weak typeof(self) weakSelf = self;
-    [[[NIMSDK sharedSDK] teamManager] updateNotifyState:on
+    [[[NIMSDK sharedSDK] teamManager] updateNotifyState:!on
                                                  inTeam:[self.team teamId]
                                              completion:^(NSError *error) {
                                                  [weakSelf refreshTableBody];
@@ -430,11 +430,17 @@
             case 0://取消
                 break;
             case 1:{
+                __weak __typeof(self) weakSelf = self;
                 [[NIMSDK sharedSDK].teamManager quitTeam:self.team.teamId completion:^(NSError *error) {
+                    __strong __typeof(weakSelf) strongSelf = weakSelf;
                     if (!error) {
-                        [self.navigationController popToRootViewControllerAnimated:YES];
+                        NIMSession *session = [NIMSession session:self.team.teamId type:NIMSessionTypeTeam];
+                        NIMRecentSession *recentSession = [[NIMSDK sharedSDK].conversationManager recentSessionBySession:session];
+                        [[NIMSDK sharedSDK].conversationManager deleteRecentSession:recentSession];
+                        
+                        [strongSelf.navigationController popToViewController:strongSelf.navigationController.viewControllers[strongSelf.navigationController.viewControllers.count - 3] animated:YES];
                     }else{
-                        [self.view makeToast:@"退出失败"];
+                        [strongSelf.view makeToast:@"退出失败"];
                     }
                 }];
                 break;
@@ -529,7 +535,27 @@
     CGSize size = [self.headerView sizeThatFits:CGSizeMake(width, CGFLOAT_MAX)];
     self.headerView.nim_size = size;
     self.headerView.enableRemove = self.currentOpera == CardHeaderOpeatorRemove;
-    self.tableView.tableHeaderView = self.headerView;
+    self.headerView.collectionView.backgroundColor = [UIColor whiteColor];
+    
+    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.headerView.nim_width, self.headerView.nim_height + 50 + 20)];
+    headerView.backgroundColor = [UIColor clearColor];
+    [headerView addSubview:self.headerView];
+    
+    UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
+    cell.frame = CGRectMake(0, 0, headerView.nim_width, 50);
+    cell.backgroundColor = [UIColor whiteColor];
+//    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    cell.textLabel.text = @"讨论组成员";
+    cell.textLabel.font = [UIFont boldSystemFontOfSize:17];
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"共%ld人", self.teamMembers.count];
+    UIView *sep = [[UIView alloc] initWithFrame:CGRectMake(15, cell.nim_height - 1, cell.nim_width - 15 * 2, 1)];
+    sep.backgroundColor = NIMKit_UIColorFromRGB(0xebebeb);
+    [cell addSubview:sep];
+    sep.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
+    self.headerView.nim_top = cell.nim_height;
+    [headerView addSubview:cell];
+    
+    self.tableView.tableHeaderView = headerView;
 }
 
 

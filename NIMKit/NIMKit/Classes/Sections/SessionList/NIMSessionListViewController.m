@@ -60,6 +60,10 @@
     
     extern NSString *const NIMKitUserInfoHasUpdatedNotification;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onUserInfoHasUpdatedNotification:) name:NIMKitUserInfoHasUpdatedNotification object:nil];
+    
+    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPress:)];
+    longPress.minimumPressDuration = 1.f;
+    [self.tableView addGestureRecognizer:longPress];
 }
 
 - (void)refresh{
@@ -68,6 +72,7 @@
     }else{
         self.tableView.hidden = NO;
     }
+    
     [self.tableView reloadData];
 }
 
@@ -83,7 +88,7 @@
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    return YES;
+    return NO;
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -257,6 +262,22 @@
     [self onSelectedAvatar:recent atIndexPath:indexPath];
 }
 
+- (void)onLongPress:(UILongPressGestureRecognizer *)longPress {
+    if (longPress.state == UIGestureRecognizerStateBegan) {
+        CGPoint point = [longPress locationInView:self.tableView];
+        NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:point];
+        NIMRecentSession *recent = self.recentSessions[indexPath.row];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[self nameForRecentSession:recent] message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+        __weak __typeof(self) weakSelf = self;
+        UIAlertAction *removeAction = [UIAlertAction actionWithTitle:@"删除该会话" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [weakSelf onDeleteRecentAtIndexPath:recent atIndexPath:indexPath];
+        }];
+        [alertController addAction:removeAction];
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil];
+        [alertController addAction:cancelAction];
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
+}
 
 
 #pragma mark - Private

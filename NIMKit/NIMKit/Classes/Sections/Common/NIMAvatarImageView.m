@@ -144,11 +144,11 @@ CGRect NIMKit_CGRectWithCenterAndSize(CGPoint center, CGSize size){
 @implementation NIMAvatarImageView (SDWebImageCache)
 
 - (void)nim_setImageWithURL:(NSURL *)url {
-    [self nim_setImageWithURL:url placeholderImage:nil options:0 progress:nil completed:nil];
+    [self nim_setImageWithURL:url placeholderImage:nil options:SDWebImageRefreshCached | SDWebImageRetryFailed  progress:nil completed:nil];
 }
 
 - (void)nim_setImageWithURL:(NSURL *)url placeholderImage:(UIImage *)placeholder {
-    [self nim_setImageWithURL:url placeholderImage:placeholder options:0 progress:nil completed:nil];
+    [self nim_setImageWithURL:url placeholderImage:placeholder options:SDWebImageRefreshCached | SDWebImageRetryFailed progress:nil completed:nil];
 }
 
 - (void)nim_setImageWithURL:(NSURL *)url placeholderImage:(UIImage *)placeholder options:(SDWebImageOptions)options {
@@ -156,11 +156,11 @@ CGRect NIMKit_CGRectWithCenterAndSize(CGPoint center, CGSize size){
 }
 
 - (void)nim_setImageWithURL:(NSURL *)url completed:(SDExternalCompletionBlock)completedBlock {
-    [self nim_setImageWithURL:url placeholderImage:nil options:0 progress:nil completed:completedBlock];
+    [self nim_setImageWithURL:url placeholderImage:nil options:SDWebImageRefreshCached | SDWebImageRetryFailed progress:nil completed:completedBlock];
 }
 
 - (void)nim_setImageWithURL:(NSURL *)url placeholderImage:(UIImage *)placeholder completed:(SDExternalCompletionBlock)completedBlock {
-    [self nim_setImageWithURL:url placeholderImage:placeholder options:0 progress:nil completed:completedBlock];
+    [self nim_setImageWithURL:url placeholderImage:placeholder options:SDWebImageRefreshCached | SDWebImageRetryFailed progress:nil completed:completedBlock];
 }
 
 - (void)nim_setImageWithURL:(NSURL *)url placeholderImage:(UIImage *)placeholder options:(SDWebImageOptions)options completed:(SDExternalCompletionBlock)completedBlock {

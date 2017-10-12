@@ -26,8 +26,8 @@
 
 @end
 
-#define RegularTeamMemberViewHeight 53
-#define RegularTeamMemberViewWidth  38
+#define RegularTeamMemberViewHeight 70
+#define RegularTeamMemberViewWidth  50
 @implementation NIMAdvancedTeamMemberView
 - (instancetype)initWithFrame:(CGRect)frame{
     self = [super initWithFrame:frame];
@@ -36,7 +36,7 @@
         _titleLabel.backgroundColor = [UIColor clearColor];
         _titleLabel.font = [UIFont systemFontOfSize:12.f];
         [self addSubview:_titleLabel];
-        _imageView   = [[NIMAvatarImageView alloc] initWithFrame:CGRectMake(0, 0, 37, 37)];
+        _imageView   = [[NIMAvatarImageView alloc] initWithFrame:CGRectMake(0, 0, 45, 45)];
         [self addSubview:_imageView];
     }
     return self;
@@ -118,9 +118,9 @@
         self.addBtn.userInteractionEnabled = NO;
     }
     
-    CGFloat padding = 44.f;
-    CGFloat itemWidth = 49.f;
-    NSInteger maxIconCount = (width - padding) / itemWidth;
+    CGFloat padding = 40.f;
+    CGFloat itemWidth = RegularTeamMemberViewWidth;
+    NSInteger maxIconCount = (width - padding) / (itemWidth + 20);
     NSInteger iconCount = members.count > maxIconCount-count ? maxIconCount : members.count + count;
     NIMSession *session = [NIMSession session:team.teamId type:NIMSessionTypeTeam];
     for (UIView *view in _icons) {
@@ -163,7 +163,10 @@
     self.detailTextLabel.nim_top = top;
     self.accessoryView.nim_top = top;
     
-    CGFloat spacing = 12.f;
+    CGFloat padding = 40.f;
+    CGFloat itemWidth = RegularTeamMemberViewWidth;
+    NSInteger maxIconCount = (self.nim_width - padding) / (itemWidth + 20);
+    CGFloat spacing = (self.nim_width - padding - itemWidth * maxIconCount) / (maxIconCount - 1);
     CGFloat bottom  = 10.f;
     for (NIMAdvancedTeamMemberView *view in _icons) {
         view.nim_left = left;
