@@ -434,11 +434,7 @@
                 [[NIMSDK sharedSDK].teamManager quitTeam:self.team.teamId completion:^(NSError *error) {
                     __strong __typeof(weakSelf) strongSelf = weakSelf;
                     if (!error) {
-                        NIMSession *session = [NIMSession session:self.team.teamId type:NIMSessionTypeTeam];
-                        NIMRecentSession *recentSession = [[NIMSDK sharedSDK].conversationManager recentSessionBySession:session];
-                        [[NIMSDK sharedSDK].conversationManager deleteRecentSession:recentSession];
-                        
-                        [strongSelf.navigationController popToViewController:strongSelf.navigationController.viewControllers[strongSelf.navigationController.viewControllers.count - 3] animated:YES];
+                        [strongSelf.navigationController popViewControllerAnimated:YES];
                     }else{
                         [strongSelf.view makeToast:@"退出失败"];
                     }
