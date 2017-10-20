@@ -111,8 +111,13 @@
             }
             break;
         }
-        case NIMInputStatusMore:
+        case NIMInputStatusMore: {
+            self.nim_height = _toolBar.nim_height + 128;
+            self.nim_bottom = self.superview.nim_height;
+        }
+            break;
         case NIMInputStatusEmoticon:
+            self.nim_height = _toolBar.nim_height + NTESDefaultContainerHeight;
             self.nim_bottom = self.superview.nim_height;
             break;
         default:
@@ -202,7 +207,7 @@
 - (NIMInputMoreContainerView *)moreContainer
 {
     if (!_moreContainer) {
-        _moreContainer = [[NIMInputMoreContainerView alloc] initWithFrame:CGRectMake(0,0, self.nim_width,_containerHeight)];
+        _moreContainer = [[NIMInputMoreContainerView alloc] initWithFrame:CGRectMake(0,0, self.nim_width,128)];
         _moreContainer.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         _moreContainer.hidden   = YES;
         _moreContainer.config   = _inputConfig;
@@ -410,6 +415,7 @@
     {
         [self bringSubviewToFront:self.moreContainer];
         [self.moreContainer setHidden:NO];
+        self.nim_height = self.moreContainer.nim_height;
         [self.emoticonContainer setHidden:YES];
         if (self.toolBar.showsKeyboard) {
             self.status = NIMInputStatusMore;

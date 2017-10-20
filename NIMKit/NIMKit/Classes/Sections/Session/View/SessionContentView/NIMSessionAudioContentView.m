@@ -67,6 +67,9 @@
 
 - (void)refresh:(NIMMessageModel *)data{
     [super refresh:data];
+    
+    self.voiceImageView.transform = self.model.message.isOutgoingMsg ? CGAffineTransformMakeRotation(180 * M_PI / 180.0) : CGAffineTransformIdentity;
+    
     NIMAudioObject *object = self.model.message.messageObject;
     self.durationLabel.text = [NSString stringWithFormat:@"%zd\"",(object.duration+500)/1000];//四舍五入
     

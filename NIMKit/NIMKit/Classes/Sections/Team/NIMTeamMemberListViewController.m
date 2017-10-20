@@ -120,13 +120,19 @@
     NSIndexPath *indexpath = [self.collectionView indexPathForCell:cell];
     NSInteger index = indexpath.section * self.collectionItemNumber;
     index += indexpath.row;
-    NIMTeamMemberCardViewController *vc = [[NIMTeamMemberCardViewController alloc] init];
-    vc.delegate = self;
+//    NIMTeamMemberCardViewController *vc = [[NIMTeamMemberCardViewController alloc] init];
+//    vc.delegate = self;
+//
+//    NIMTeamCardMemberItem *member = self.data[index];
+//    NIMTeamCardMemberItem *viewer = [[NIMTeamCardMemberItem alloc] initWithMember:self.myTeamCard];
+//    vc.member = member;
+//    vc.viewer = viewer;
+//    [self.navigationController pushViewController:vc animated:YES];
     
     NIMTeamCardMemberItem *member = self.data[index];
-    NIMTeamCardMemberItem *viewer = [[NIMTeamCardMemberItem alloc] initWithMember:self.myTeamCard];
-    vc.member = member;
-    vc.viewer = viewer;
+    Class clazz = NSClassFromString(@"NTESPersonalCardViewController");
+    SEL selector = @selector(initWithUserId:);
+    UIViewController *vc = [[clazz alloc] performSelector:selector withObject:member.member.userId];
     [self.navigationController pushViewController:vc animated:YES];
 }
 
