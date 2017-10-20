@@ -434,7 +434,15 @@
                 [[NIMSDK sharedSDK].teamManager quitTeam:self.team.teamId completion:^(NSError *error) {
                     __strong __typeof(weakSelf) strongSelf = weakSelf;
                     if (!error) {
-                        [strongSelf.navigationController popViewControllerAnimated:YES];
+                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                            NIMSession *session = [NIMSession session:strongSelf.team.teamId type:NIMSessionTypeTeam];
+                            NIMDeleteMessagesOption *option = [[NIMDeleteMessagesOption alloc] init];
+                            option.removeSession = YES;
+                            option.removeTable = YES;
+                            [[NIMSDK sharedSDK].conversationManager deleteAllmessagesInSession:session option:option];
+                        });
+                        
+                        [strongSelf.navigationController popToViewController:strongSelf.navigationController.viewControllers[1] animated:YES];
                     }else{
                         [strongSelf.view makeToast:@"退出失败"];
                     }
@@ -451,7 +459,7 @@
 #pragma mark - NIMMemberGroupViewDelegate
 - (void)didSelectRemoveButtonWithMemberId:(NSString *)uid{
     __weak typeof(self) wself = self;
-    [NIMKitProgressHUD show];
+//    [NIMKitProgressHUD show];
     [[NIMSDK sharedSDK].teamManager kickUsers:@[uid] fromTeam:self.team.teamId completion:^(NSError *error) {
         [NIMKitProgressHUD dismiss];
         if (!error) {
