@@ -36,7 +36,7 @@
         UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
         UIVisualEffectView *blurView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
         blurView.frame = self.bounds;
-        [self addSubview:blurView];
+        [self addSubview:blurView.contentView];
 
         self.backgroundColor  = [UIColor whiteColor];
         self.layer.cornerRadius = 14.f;
