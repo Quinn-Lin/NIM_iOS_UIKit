@@ -129,11 +129,14 @@
 //    vc.viewer = viewer;
 //    [self.navigationController pushViewController:vc animated:YES];
     
+    NSString *myUserId = [[[NIMSDK sharedSDK] loginManager] currentAccount];
     NIMTeamCardMemberItem *member = self.data[index];
-    Class clazz = NSClassFromString(@"NTESPersonalCardViewController");
-    SEL selector = @selector(initWithUserId:);
-    UIViewController *vc = [[clazz alloc] performSelector:selector withObject:member.member.userId];
-    [self.navigationController pushViewController:vc animated:YES];
+    if (![myUserId isEqualToString:member.member.userId]) {
+        Class clazz = NSClassFromString(@"NTESPersonalCardViewController");
+        SEL selector = @selector(initWithUserId:);
+        UIViewController *vc = [[clazz alloc] performSelector:selector withObject:member.member.userId];
+        [self.navigationController pushViewController:vc animated:YES];
+    }
 }
 
 #pragma mark - TeamMemberCardActionDelegate

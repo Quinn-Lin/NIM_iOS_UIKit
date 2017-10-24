@@ -457,6 +457,16 @@
 
 
 #pragma mark - NIMMemberGroupViewDelegate
+- (void)didSelectMemberId:(NSString *)uid {
+    NSString *myUserId = [[NIMSDK sharedSDK].loginManager currentAccount];
+    if (![uid isEqualToString:myUserId]) {
+        Class clazz = NSClassFromString(@"NTESPersonalCardViewController");
+        SEL selector = @selector(initWithUserId:);
+        UIViewController *vc = [[clazz alloc] performSelector:selector withObject:uid];
+        [self.navigationController pushViewController:vc animated:YES];
+    }
+}
+
 - (void)didSelectRemoveButtonWithMemberId:(NSString *)uid{
     __weak typeof(self) wself = self;
 //    [NIMKitProgressHUD show];
